@@ -1,104 +1,92 @@
-
-# include <unistd.h>
-#include <fcntl.h>
+#include <stdlib.h>
 #include <stdio.h>
-# include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 42
 #endif
 
-char	*ft_strchr(char *s, int c)
+int ft_strlen(const char *str)
 {
-	while (*s)
-	{
-		if (*s == (char)c)
-			return (s);
-		s++;
-	}
-	return (NULL);
+    int i = 0;
+
+    while(str[i])
+        i++;
+    return (i);
 }
 
-size_t	ft_strlen(const char *s)
+char *ft_strchr(char *s, int c)
 {
-	size_t	i = 0;
-	
-	while (s[i])
-		i++;
-	return (i);
+    while (*s)
+    {
+        if (*s == (char)c)
+            return (s);
+        s++;
+    }
+    return (NULL);
 }
 
-void	ft_strcpy(char *dst, const char *src)
+void ft_strcpy(char *dest, const char *src)
 {
-	while (*src)	
-		*dst++ = *src++;
-	*dst = '\0';
+    int i = 0;
+
+    while(src[i])
+    {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = '\0';
 }
 
-char	*ft_strdup(const char *src)
+char *ft_strdup(const char *str)
 {
-	size_t	len = ft_strlen(src) + 1;
-	char	*dst = malloc(len);
-	
-	if (dst == NULL)
-		return (NULL);
-	ft_strcpy(dst, src);
-	return (dst);
+    char *res;
+    int len = ft_strlen(str) + 1;
+
+    res = malloc(len);
+    if(!res)
+        return (NULL);
+    ft_strcpy(res, str);
+    return (res);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char *ft_strjoin(char *s1, char *s2)
 {
-	char *join;
+    char *res;
 
-	if (!s1 || !s2)
-		return (NULL);
-	join = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!join)
-		return (NULL);
-	ft_strcpy(join, s1);
-	ft_strcpy(join + ft_strlen(s1), s2);
-	free(s1);
-	return (join);
+    if(!s1 || !s2)
+        return (NULL);
+    res = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+    if(!res)
+        return (NULL);
+    ft_strcpy(res, s1);
+    ft_strcpy(res + ft_strlen(s1), s2);
+    free(s1);
+    return (res);
 }
 
-char	*get_next_line(int fd)
+char *get_next_line(int fd)
 {
-	static char	buf[BUFFER_SIZE + 1];
-	char		*line;
-	char		*newline;
-	int			count;
+    static char buffer[BUFFER_SIZE + 1];
+    char *line;
+    char *new_line;
+    int count;
 
-	line = ft_strdup(buf);
-	while (!(newline = ft_strchr(line, '\n')) && (count = read(fd, buf, BUFFER_SIZE)))
-	{
-		buf[count] = '\0';
-		line = ft_strjoin(line, buf);
-	}
-	if (ft_strlen(line) == 0)
-		return (free(line), NULL);
-
-	if (newline)
-	{
-		ft_strcpy(buf, newline + 1);
-		*(newline + 1) = '\0';
-	}
-	else
-		buf[0] = '\0';
-
-	return (line);
+    line = ft_strdup(buffer);
+    while(!(new_line =  ft_strchr(line,'\n')) && (count = read(fd, buffer, BUFFER_SIZE)))
+    {
+        buffer[count] = '\0';
+        line = ft_strjoin(line, buffer);
+    }
+    if(ft_strlen(line) == 0)
+        return(free(line), NULL);
+    if(new_line)
+    {
+        ft_strcpy(buffer, new_line + 1);
+        *(new_line + 1) = '\0';
+    }
+    else
+        buffer[0] = '\0';
+    return (line);
 }
-// #include <stdio.h>
-// int main()
-// {
-// 	int	fd;
-// 	char *str;
-
-// 	fd = open("test.txt", O_RDONLY);
-// 	while ((str = get_next_line(fd)))
-// 	{
-// 		printf("%s", str);
-// 		free(str);
-// 	}
-// 	printf("%s", str);
-// 	return (0);
-// }
